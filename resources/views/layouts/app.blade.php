@@ -19,22 +19,40 @@
     </script>
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <!--htmx-->
+    <script>
+    document.addEventListener("htmx:beforeRequest", function() {
+        document.getElementById("reload-bar").style.display = "block";
+    });
+
+    document.addEventListener("htmx:afterRequest", function() {
+        document.getElementById("reload-bar").style.display = "none";
+    });
+    </script>
     <!-- Styles -->
     <style>
-    .fade-out {
-        animation: fadeOut 2s ease-in-out forwards;
-        opacity: 1;
+    .alert {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    @keyframes fadeOut {
-        0% {
-            opacity: 1;
-        }
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #fff;
+        margin-left: 10px;
+    }
 
-        100% {
-            opacity: 0;
-            visibility: hidden;
-        }
+    .close-btn:hover {
+        color: #ccc;
     }
     </style>
 </head>

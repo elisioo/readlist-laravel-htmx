@@ -25,5 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('readlist', ReadlistController::class)->only(['index', 'store', 'destroy', 'update']);
 });
 
+Route::resource('readlist', ReadlistController::class)
+    ->only(['index', 'store', 'edit', 'update', 'destroy'])
+    ->middleware(['auth', 'verified']);
 
 require __DIR__ . '/auth.php';

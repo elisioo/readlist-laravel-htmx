@@ -1,13 +1,19 @@
 <x-app-layout>
     @if (session('success'))
-    <div class="alert alert-success fade-out">
+    <div class="alert alert-success" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
         {{ session('success') }}
+        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
     @endif
 
     @if (session('error'))
-    <div class="alert alert-danger fade-out">
+    <div class="alert alert-danger" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
         {{ session('error') }}
+        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
     @endif
 
@@ -17,7 +23,6 @@
         </h2>
     </x-slot>
     <div class="container mt-4">
-
         <!-- Add New Book Button -->
         <div class="mb-3 text-end">
             <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addBookModal">
@@ -57,7 +62,6 @@
                             @endphp
                             <span class="badge {{ $badgeClass }}">{{ $row->status }}</span>
                         </td>
-
                         <td style="width: 20px;">
                             <div class="btn-group" role="group">
                                 <button class="shadow-none btn btn-sm" style="color:rgb(255, 153, 0);"
@@ -66,8 +70,8 @@
                                     data-status="{{ $row->status }}" onclick="openEditPopup(this)">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </button>
-
-                                <form action="{{ route('readlist.destroy', $row->id) }}" method="POST"
+                                <form hx-post="{{ route('readlist.destroy', $row->id) }}" hx-target="body"
+                                    hx-swap="outerHTML"
                                     onsubmit="return confirm('Are you sure you want to delete this book?');">
                                     @csrf
                                     @method('DELETE')
@@ -99,7 +103,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('readlist.store') }}" method="POST">
+                    <form hx-post="{{route('readlist.store')}}" hx-target="body" hx-swap="outerHTML">
                         @csrf
                         <div class="mb-3">
                             <label for="title" class="form-label">Book Title</label>
@@ -171,7 +175,7 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <button type="submit" class="btn btn-success">{{ __('Save') }}</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -179,6 +183,34 @@
             </div>
         </div>
     </div>
+
+    <style>
+    .alert {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300px;
+        /* Adjust width as needed */
+        padding: 10px 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #fff;
+        /* Matches alert text color, adjust if needed */
+        margin-left: 10px;
+    }
+
+    .close-btn:hover {
+        color: #ccc;
+        /* Hover effect */
+    }
+    </style>
 
     <script>
     function openEditPopup(button) {
@@ -194,19 +226,15 @@
         editModal.show();
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        let alerts = document.querySelectorAll(".fade-out");
-        alerts.forEach(alert => {
-            alert.style.opacity = "1";
-            alert.style.transition = "opacity 1.5s ease-in-out";
-            alert.style.opacity = "0";
-
-            setTimeout(() => {
-                alert.style.display = "none";
-            }, 1500);
+    document.body.addEventListener("htmx:afterSwap", function() {
+        var modals = document.querySelectorAll(".modal");
+        modals.forEach(function(modal) {
+            new bootstrap.Modal(modal);
         });
+
+        if (document.body.style.overflow === "hidden") {
+            document.body.style.overflow = "";
+        }
     });
     </script>
-
-
 </x-app-layout>

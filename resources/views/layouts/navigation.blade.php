@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="flex items-center shrink-0">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('dashboard') }}" hx-boost="true" hx-push-url="true">
                         <i class="fa-solid fa-book fa-2xl"></i>
                     </a>
                 </div>

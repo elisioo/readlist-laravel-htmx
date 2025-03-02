@@ -8,25 +8,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Protect dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Protect profile routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Protect Readlist routes
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('readlist', ReadlistController::class)->only(['index', 'store', 'destroy', 'update']);
-});
-
+// Single resourceful route for readlist
 Route::resource('readlist', ReadlistController::class)
     ->only(['index', 'store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
+
+// Correct the typo in the explicit PATCH route (if intended)
+Route::patch('/readlist/{readlist}', [ReadlistController::class, 'update'])->name('readlist.update');
 
 require __DIR__ . '/auth.php';

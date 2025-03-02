@@ -1,6 +1,6 @@
 <x-app-layout>
     @if (session('success'))
-    <div class="alert alert-success" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
+    <div class="alert alert-success" style="position: fixed; top: 10px; right: 20px; z-index: 1050; width: 300px;">
         {{ session('success') }}
         <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">
             <i class="fa-solid fa-xmark"></i>
@@ -9,7 +9,7 @@
     @endif
 
     @if (session('error'))
-    <div class="alert alert-danger" style="position: fixed; top: 10px; right: 10px; z-index: 1050;">
+    <div class="alert alert-danger" style="position: fixed; top: 60px; right: 20px; z-index: 1050; width: 300px;">
         {{ session('error') }}
         <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">
             <i class="fa-solid fa-xmark"></i>
@@ -150,7 +150,7 @@
                     <form id="editForm" method="POST">
                         @csrf
                         @method('PUT')
-                        <input type="hidden" id="editBookId" name="book_id">
+                        <input type="hidden" id="editBookId" name="id">
 
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
@@ -175,7 +175,7 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">{{ __('Save') }}</button>
+                            <button type="submit" class="btn btn-success">{{ __('Save Changes') }}</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
@@ -184,33 +184,6 @@
         </div>
     </div>
 
-    <style>
-    .alert {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 300px;
-        /* Adjust width as needed */
-        padding: 10px 15px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .close-btn {
-        background: none;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
-        color: #fff;
-        /* Matches alert text color, adjust if needed */
-        margin-left: 10px;
-    }
-
-    .close-btn:hover {
-        color: #ccc;
-        /* Hover effect */
-    }
-    </style>
 
     <script>
     function openEditPopup(button) {

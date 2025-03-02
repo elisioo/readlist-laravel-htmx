@@ -65,22 +65,27 @@ class ReadlistController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Readlist $readlist): RedirectResponse
+    public function update(Request $request, Readlist $readlist)
     {
         if (auth()->id() !== $readlist->user_id) {
             return redirect()->route('readlist.index')->with('error', 'Unauthorized action.');
         }
 
-        $validate = $request->validate([
-            'title' => 'required|string|max:100',
-            'description' => 'required|string',
-            'author' => 'required|string|max:100',
-            'status' => 'required|in:To Read,Unread,Ongoing,Done'
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'author' => 'required',
+            'status' => 'required|in:To Read,Unread,Ongoing,Done',
         ]);
 
-        $readlist->update($validate);
+        $readlist->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'author' => $request->author,
+            'status' => $request->status,
+        ]);
 
-        return redirect()->route('readlist.index')->with('success', 'Book details updated successfully!');
+        return redirect()->route('readlist.index')->with('success', 'Book updated successfully!');
     }
 
     /**

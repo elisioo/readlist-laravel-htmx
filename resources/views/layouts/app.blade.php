@@ -20,7 +20,23 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Styles -->
+    <style>
+    .fade-out {
+        animation: fadeOut 2s ease-in-out forwards;
+        opacity: 1;
+    }
 
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+            visibility: hidden;
+        }
+    }
+    </style>
 </head>
 
 <body class="font-sans antialiased">

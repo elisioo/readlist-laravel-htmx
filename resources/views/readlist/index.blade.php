@@ -1,4 +1,16 @@
 <x-app-layout>
+    @if (session('success'))
+    <div class="alert alert-success fade-out">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if (session('error'))
+    <div class="alert alert-danger fade-out">
+        {{ session('error') }}
+    </div>
+    @endif
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('📚 My Reading List') }}
@@ -181,5 +193,20 @@
         var editModal = new bootstrap.Modal(document.getElementById('editBookModal'));
         editModal.show();
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let alerts = document.querySelectorAll(".fade-out");
+        alerts.forEach(alert => {
+            alert.style.opacity = "1";
+            alert.style.transition = "opacity 1.5s ease-in-out";
+            alert.style.opacity = "0";
+
+            setTimeout(() => {
+                alert.style.display = "none";
+            }, 1500);
+        });
+    });
     </script>
+
+
 </x-app-layout>

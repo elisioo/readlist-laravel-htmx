@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\readlist;
+use App\Models\Readlist;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\Response;
-use Illuminate\Http\RedirectResponse;
 
 class ReadlistController extends Controller
 {
@@ -16,16 +14,8 @@ class ReadlistController extends Controller
     public function index(): View
     {
         return view('readlist.index', [
-            'readlists' => readlist::with('user')->latest()->get(),
+            'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -40,26 +30,9 @@ class ReadlistController extends Controller
             'status' => 'required|in:To Read,Unread,Ongoing,Done'
         ]);
 
-
         $request->user()->readlists()->create($validate);
 
         return redirect()->route('readlist.index')->with('success', 'Book added to your readlist!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(readlist $readlist)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(readlist $readlist)
-    {
-        //
     }
 
     /**
@@ -78,12 +51,7 @@ class ReadlistController extends Controller
             'status' => 'required|in:To Read,Unread,Ongoing,Done',
         ]);
 
-        $readlist->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'author' => $request->author,
-            'status' => $request->status,
-        ]);
+        $readlist->update($request->only(['title', 'description', 'author', 'status']));
 
         return redirect()->route('readlist.index')->with('success', 'Book updated successfully!');
     }
@@ -91,13 +59,13 @@ class ReadlistController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(readlist $readlist)
+    public function destroy(Readlist $readlist)
     {
         if (auth()->id() !== $readlist->user_id) {
             return redirect()->route('readlist.index')->with('error', 'Unauthorized action.');
         }
 
-        $readlist->delete(); // Delete the book entry
+        $readlist->delete();
 
         return redirect()->route('readlist.index')->with('success', 'Book removed from your readlist.');
     }

@@ -65,14 +65,12 @@
                         <td style="width: 20px;">
                             <div class="btn-group" role="group">
                                 <button class="shadow-none btn btn-sm" style="color:rgb(255, 153, 0);"
-                                    data-id="{{ $row->id }}" data-title="{{ $row->title }}"
-                                    data-description="{{ $row->description }}" data-author="{{ $row->author }}"
-                                    data-status="{{ $row->status }}" onclick="openEditPopup(this)">
-                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    data-bs-toggle="modal" data-bs-target="#editBookModal"
+                                    href="route{'readlist.update',$row->id}">
+                                    <i class=" fa-solid fa-pen-to-square"></i> Edit
                                 </button>
                                 <form hx-post="{{ route('readlist.destroy', $row->id) }}" hx-target="body"
-                                    hx-swap="outerHTML"
-                                    onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                    hx-swap="outerHTML" hx-confirm="Are you sure you want to delete this book?">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm text-danger">
@@ -139,7 +137,7 @@
     </div>
 
     <!-- Edit Book Modal -->
-    <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal fade" tabindex="-1" aria-labelledby="editBookModalLabel" id="editBookModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -147,23 +145,26 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" method="POST">
+                    <form id="editForm" hx-post="{{ route('readlist.update', $row->id) }}" hx-target="body"
+                        hx-swap="outerHTML" hx-push-url="{{ route('readlist.index')}}" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
+                        @method('patch')
                         <input type="hidden" id="editBookId" name="id">
 
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="editTitle" name="title" required>
+                            <input type="text" class="form-control" id="editTitle" name="title"
+                                value="{{ old('title', $row->title) }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="editDescription" class="form-label">Description</label>
                             <textarea class="form-control" rows="3" id="editDescription" name="description"
-                                required></textarea>
+                                required>{{ old('description', $row->description) }}</textarea>
                         </div>
                         <div class="mb-3">
                             <label for="editAuthor" class="form-label">Author</label>
-                            <input type="text" class="form-control" id="editAuthor" name="author" required>
+                            <input type="text" class="form-control" id="editAuthor" name="author"
+                                value="{{ old('author', $row->author) }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="editStatus" class="form-label">Status</label>
@@ -186,28 +187,15 @@
 
 
     <script>
-    function openEditPopup(button) {
-        document.getElementById("editBookId").value = button.dataset.id;
-        document.getElementById("editTitle").value = button.dataset.title;
-        document.getElementById("editDescription").value = button.dataset.description;
-        document.getElementById("editAuthor").value = button.dataset.author;
-        document.getElementById("editStatus").value = button.dataset.status;
+        document.body.addEventListener("htmx:afterSwap", function() {
+            var modals = document.querySelectorAll(".modal");
+            modals.forEach(function(modal) {
+                new bootstrap.Modal(modal);
+            });
 
-        document.getElementById("editForm").action = "{{ url('/readlist') }}/" + button.dataset.id;
-
-        var editModal = new bootstrap.Modal(document.getElementById('editBookModal'));
-        editModal.show();
-    }
-
-    document.body.addEventListener("htmx:afterSwap", function() {
-        var modals = document.querySelectorAll(".modal");
-        modals.forEach(function(modal) {
-            new bootstrap.Modal(modal);
+            if (document.body.style.overflow === "hidden") {
+                document.body.style.overflow = "";
+            }
         });
-
-        if (document.body.style.overflow === "hidden") {
-            document.body.style.overflow = "";
-        }
-    });
     </script>
 </x-app-layout>

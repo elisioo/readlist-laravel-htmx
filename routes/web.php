@@ -23,7 +23,6 @@ Route::resource('readlist', ReadlistController::class)
     ->only(['index', 'store', 'edit', 'update', 'destroy'])
     ->middleware(['auth', 'verified']);
 
-// Correct the typo in the explicit PATCH route (if intended)
-Route::patch('/readlist/{readlist}', [ReadlistController::class, 'update'])->name('readlist.update');
+
 
 require __DIR__ . '/auth.php';

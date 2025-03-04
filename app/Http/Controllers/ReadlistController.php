@@ -30,6 +30,12 @@ class ReadlistController extends Controller
             'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
         ])->with('success', 'Book added to your readlist!');
     }
+    public function edit(Readlist $readlist)
+    {
+        return view('readlist.edit', [
+            'readlist' => $readlist,
+        ]);
+    }
 
     public function update(Request $request, Readlist $readlist)
     {

@@ -1,5 +1,4 @@
 <x-app-layout>
-    <!-- Success Alert -->
     @if (session('success'))
     <div class="alert alert-success" style="position: fixed; top: 10px; right: 20px; z-index: 1050; width: 300px;">
         {{ session('success') }}
@@ -9,7 +8,6 @@
     </div>
     @endif
 
-    <!-- Error Alert -->
     @if (session('error'))
     <div class="alert alert-danger" style="position: fixed; top: 60px; right: 20px; z-index: 1050; width: 300px;">
         {{ session('error') }}
@@ -19,82 +17,80 @@
     </div>
     @endif
 
-    <!-- Header -->
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight text-center">
-            {{ __('📚 My Reading List') }}
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight text-center"><i
+                class="fa-solid fa-book-open-reader" style="color: #FFD43B;"></i>
+            {{ __(' My Reading List') }}
         </h2>
     </x-slot>
 
-    <!-- Main Container -->
-    <div class="container mt-4">
+    <div class=" container mt-4">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <!-- Add New Book Button -->
+
                 <div class="mb-4 text-end">
-                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addBookModal">
                         <i class="fa fa-plus"></i> Add New Book
                     </button>
                 </div>
 
-                <!-- Booklist Display -->
+
                 <div class="bg-white shadow-sm rounded-lg divide-y">
                     @if ($readlists->count())
                     @foreach ($readlists as $readlist)
                     @if ($readlist->user_id == Auth::id())
+                    <div class="p-1 flex gap-3 w-full">
+                        <i class="fa-solid fa-bookmark" style="color: #FFD43B; font-size:50px;"></i>
+                        <div>
+                            <span class="text-gray-800">{{ $readlist->user->name }}</span>
+                            <small class="ml-2 text-sm text-gray-600">
+                                {{ $readlist->created_at->format('j M Y, g:i a') }}
+                            </small>
+                            @unless ($readlist->created_at->eq($readlist->updated_at))
+                            <small class="text-sm text-gray-600"> &middot; {{ __('edited') }}</small>
+                            @endunless
+                        </div>
+
+                        <div class="ml-auto text-end">
+                            <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal"
+                                        data-bs-target="#editBookModal-{{ $readlist->id }}">
+                                        <i class="fa fa-pen px-3" style="color: #FFD43B;"></i>{{ __('Edit') }}
+                                    </button>
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('readlist.destroy', $readlist) }}"
+                                        hx-post="{{ route('readlist.destroy', $readlist) }}" hx-target="body"
+                                        hx-swap="outerHTML" hx-confirm="Are you sure you want to delete this book?">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fa fa-trash px-3" style="color: red;"></i>{{ __('Remove') }}
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
                     <div class="p-4 flex space-x-4 align-items-center">
                         <!-- Book Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                        </svg>
                         <div class="flex-1">
-                            <!-- Header with User and Timestamps -->
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-gray-800 fw-bold">{{ $readlist->user->name }}</span>
-                                    <small
-                                        class="ms-2 text-muted">{{ $readlist->created_at->format('j M Y, g:i a') }}</small>
-                                    @unless ($readlist->created_at->eq($readlist->updated_at))
-                                    <small class="text-muted"> ·
-                                        {{ __('Edited: ') }}{{ $readlist->updated_at->format('j M Y, g:i a') }}</small>
-                                    @endunless
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400"
-                                            viewBox="0 0 20 20" fill="currentColor">
-                                            <path
-                                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                        </svg>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <button class="dropdown-item" data-bs-toggle="modal"
-                                                data-bs-target="#editBookModal-{{ $readlist->id }}">
-                                                {{ __('Edit') }}
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <form method="POST" action="{{ route('readlist.destroy', $readlist) }}"
-                                                hx-post="{{ route('readlist.destroy', $readlist) }}" hx-target="body"
-                                                hx-swap="outerHTML"
-                                                hx-confirm="Are you sure you want to delete this book?">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dropdown-item">
-                                                    {{ __('Delete') }}
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+
                             <!-- Book Details -->
-                            <h3 class="mt-2 text-lg fw-medium text-gray-900">{{ $readlist->title }}</h3>
-                            <p class="mt-1 text-gray-700">{{ $readlist->description }}</p>
+                            <h3 class="mt-2 text-lg fw-medium text-gray-900">Title: {{ $readlist->title }}</h3>
+                            <p class="mt-1 text-gray-700">Description: {{ $readlist->description }}</p>
                             <p class="mt-1 text-muted">Author: <span class="fw-medium">{{ $readlist->author }}</span>
                             </p>
                             <p class="mt-1 text-muted">Status:
@@ -112,13 +108,15 @@
                         </div>
                     </div>
 
+
                     <!-- Edit Modal -->
                     <div class="modal fade" id="editBookModal-{{ $readlist->id }}" tabindex="-1"
                         aria-labelledby="editBookModalLabel-{{ $readlist->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="editBookModalLabel-{{ $readlist->id }}">Edit Book</h5>
+                                    <h5 class="modal-title" id="editBookModalLabel-{{ $readlist->id }}">Edit
+                                        Book</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -146,16 +144,19 @@
                                             <label class="form-label">Status</label>
                                             <select class="form-control" name="status" required>
                                                 <option value="To Read"
-                                                    {{ $readlist->status == 'To Read' ? 'selected' : '' }}>To Read
+                                                    {{ $readlist->status == 'To Read' ? 'selected' : '' }}>To
+                                                    Read
                                                 </option>
                                                 <option value="Unread"
                                                     {{ $readlist->status == 'Unread' ? 'selected' : '' }}>Unread
                                                 </option>
                                                 <option value="Ongoing"
-                                                    {{ $readlist->status == 'Ongoing' ? 'selected' : '' }}>Ongoing
+                                                    {{ $readlist->status == 'Ongoing' ? 'selected' : '' }}>
+                                                    Ongoing
                                                 </option>
                                                 <option value="Done"
-                                                    {{ $readlist->status == 'Done' ? 'selected' : '' }}>Done</option>
+                                                    {{ $readlist->status == 'Done' ? 'selected' : '' }}>
+                                                    Done</option>
                                             </select>
                                         </div>
                                         <div class="modal-footer">

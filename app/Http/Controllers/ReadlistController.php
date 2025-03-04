@@ -8,9 +8,6 @@ use Illuminate\View\View;
 
 class ReadlistController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): View
     {
         return view('readlist.index', [
@@ -18,9 +15,6 @@ class ReadlistController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validate = $request->validate([
@@ -32,16 +26,17 @@ class ReadlistController extends Controller
 
         $request->user()->readlists()->create($validate);
 
-        return redirect()->route('readlist.index')->with('success', 'Book added to your readlist!');
+        return view('readlist.index', [
+            'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
+        ])->with('success', 'Book added to your readlist!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Readlist $readlist)
     {
         if (auth()->id() !== $readlist->user_id) {
-            return redirect()->route('readlist.index')->with('error', 'Unauthorized action.');
+            return view('readlist.index', [
+                'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
+            ])->with('error', 'Unauthorized action.');
         }
 
         $request->validate([
@@ -53,20 +48,23 @@ class ReadlistController extends Controller
 
         $readlist->update($request->only(['title', 'description', 'author', 'status']));
 
-        return redirect()->route('readlist.index')->with('success', 'Book updated successfully!');
+        return view('readlist.index', [
+            'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
+        ])->with('success', 'Book updated successfully!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Readlist $readlist)
     {
         if (auth()->id() !== $readlist->user_id) {
-            return redirect()->route('readlist.index')->with('error', 'Unauthorized action.');
+            return view('readlist.index', [
+                'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
+            ])->with('error', 'Unauthorized action.');
         }
 
         $readlist->delete();
 
-        return redirect()->route('readlist.index')->with('success', 'Book removed from your readlist.');
+        return view('readlist.index', [
+            'readlists' => Readlist::where('user_id', auth()->id())->latest()->get(),
+        ])->with('success', 'Book removed from your readlist.');
     }
 }
